@@ -25,26 +25,26 @@ configure_file (
 
 # Set source list for kgp-sysinfo 
 set( sysinfo_src
-	./sysinfo/kgpSysinfo.cpp
-	)
+        ./sysinfo/kgpSysinfo.cpp
+        ./sysinfo/kgpSysinfo.h
+        )
 
 
 include_directories("${PROJECT_BINARY_DIR}")
 
-#add_subdirectory( test )
+add_subdirectory( test )
 
 
-include_directories (
-		"${LIBOPI_INCLUDE_DIRS}" "./include"
-	)
+include_directories ( "${LIBOPI_INCLUDE_DIRS}" )
+include_directories ( "./include" )
 
 add_definitions( -std=c++11 )
 
 add_executable("kgp-sysinfo" "${sysinfo_src}")
 target_link_libraries( "kgp-sysinfo" ${LIBOPI_LDFLAGS} )
 
-#enable_testing()
-#add_test( NAME TestApp COMMAND testapp )
+enable_testing()
+add_test( NAME TestApp COMMAND testapp )
 
 install( TARGETS kgp-sysinfo DESTINATION sbin )
 

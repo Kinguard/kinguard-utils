@@ -1,10 +1,4 @@
-#include "kgp-utils.h"
-#include "Config.h"
-#include <syslog.h>
-
-#include <unistd.h>
-#include <json/json.h>
-#include <libopi/SysInfo.h>
+#include "kgpSysinfo.h"
 
 using namespace OPI;
 
