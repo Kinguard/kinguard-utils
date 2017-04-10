@@ -14,92 +14,54 @@ void dprint(string s)
 }
 
 
-class kgp_sysType
+kgp_sysType::kgp_sysType()
 {
-private:
+    this->type = sysinfo.Type();
+    this->typeText = sysinfo.SysTypeText[this->type];
+}
 
-public:
-    int type;
-    string typeText;
-    kgp_sysType()
-    {
-        this->type = sysinfo.Type();
-        this->typeText = sysinfo.SysTypeText[this->type];
-    }
-
-    Json::Value jsonData()
-    {
-        Json::Value ret;
-        ret["type"] = this->type;
-        ret["typeText"] = this->typeText;
-        return ret;
-    }
-    void plainPrint()
-    {
-        printf("type: %d\n", this->type);
-        printf("typeText: %s\n", this->typeText.c_str());
-
-    }
-};
-
-class kgp_storage
+Json::Value kgp_sysType::jsonData()
 {
-private:
+    Json::Value ret;
+    ret["type"] = this->type;
+    ret["typeText"] = this->typeText;
+    return ret;
+}
 
-public:
+void kgp_sysType::plainPrint()
+{
+    printf("type: %d\n", this->type);
+    printf("typeText: %s\n", this->typeText.c_str());
 
-    kgp_storage()
-    {
-        this->StorageDevice = sysinfo.StorageDevice();
-        this->StorageDevicePath = sysinfo.StorageDevicePath();
-        this->StorageDeviceBlock = sysinfo.StorageDeviceBlock();
-        this->StorageDevicePartition = sysinfo.StorageDevicePartition();
-    }
-
-    /**
-     * @brief StorageDevicePath Get complete path to storage device
-     * @return  path to storage device
-     */
-    string StorageDevicePath;
-
-    /**
-     * @brief StorageDevice Get path to storage block device (/dev/sdg)
-     * @return path to storage block device
-     */
-    string StorageDevice;
-
-    /**
-     * @brief StorageDeviceBlock Get storage device (sdg, mmcblk0)
-     * @return name of storage device
-     */
-    string StorageDeviceBlock;
-
-    /**
-     * @brief StorageDevicePartition Get storage partition (1, -part1)
-     * @return name of storage partition
-     */
-    string StorageDevicePartition;
-
-    Json::Value jsonData()
-    {
-        Json::Value ret;
-        ret["StorageDevicePath"] = this->StorageDevicePath;
-        ret["StorageDevice"] = this->StorageDevice;
-        ret["StorageDeviceBlock"] = this->StorageDeviceBlock;
-        ret["StorageDevicePartition"] = this->StorageDevicePartition;
-        return ret;
-    }
-    void plainPrint()
-    {
-        printf("StorageDevicePath: %s\n", this->StorageDevicePath.c_str());
-        printf("StorageDevice: %s\n", this->StorageDevice.c_str());
-        printf("StorageDeviceBlock: %s\n", this->StorageDeviceBlock.c_str());
-        printf("StorageDevicePartition: %s\n", this->StorageDevicePartition.c_str());
-        return;
-    }
+}
 
 
-};
+kgp_storage::kgp_storage()
+{
+    this->StorageDevice = sysinfo.StorageDevice();
+    this->StorageDevicePath = sysinfo.StorageDevicePath();
+    this->StorageDeviceBlock = sysinfo.StorageDeviceBlock();
+    this->StorageDevicePartition = sysinfo.StorageDevicePartition();
+}
+
+Json::Value kgp_storage::jsonData()
+{
+    Json::Value ret;
+    ret["StorageDevicePath"] = this->StorageDevicePath;
+    ret["StorageDevice"] = this->StorageDevice;
+    ret["StorageDeviceBlock"] = this->StorageDeviceBlock;
+    ret["StorageDevicePartition"] = this->StorageDevicePartition;
+    return ret;
+}
+void kgp_storage::plainPrint()
+{
+    printf("StorageDevicePath: %s\n", this->StorageDevicePath.c_str());
+    printf("StorageDevice: %s\n", this->StorageDevice.c_str());
+    printf("StorageDeviceBlock: %s\n", this->StorageDeviceBlock.c_str());
+    printf("StorageDevicePartition: %s\n", this->StorageDevicePartition.c_str());
+    return;
+}
+
 void help()
 {
     printf("Usage: kgp-sysinfo [options]\n");

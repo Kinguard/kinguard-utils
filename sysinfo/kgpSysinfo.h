@@ -9,5 +9,51 @@
 #include <json/json.h>
 #include <libopi/SysInfo.h>
 
+
+class kgp_sysType
+{
+private:
+    int type;
+    string typeText;
+
+public:
+    kgp_sysType();
+    Json::Value jsonData();
+    void plainPrint();
+};
+
+class kgp_storage
+{
+private:
+    /**
+     * @brief StorageDevicePath Get complete path to storage device
+     * @return  path to storage device
+     */
+    string StorageDevicePath;
+
+    /**
+     * @brief StorageDevice Get path to storage block device (/dev/sdg)
+     * @return path to storage block device
+     */
+    string StorageDevice;
+
+    /**
+     * @brief StorageDeviceBlock Get storage device (sdg, mmcblk0)
+     * @return name of storage device
+     */
+    string StorageDeviceBlock;
+
+    /**
+     * @brief StorageDevicePartition Get storage partition (1, -part1)
+     * @return name of storage partition
+     */
+    string StorageDevicePartition;
+
+public:
+    kgp_storage();
+    Json::Value jsonData();
+    void plainPrint();
+};
+
 #endif // KGPSYSINFO_H
 
