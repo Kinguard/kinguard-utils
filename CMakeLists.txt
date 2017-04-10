@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 2.8)
 include( FindPkgConfig )
 pkg_check_modules ( LIBOPI REQUIRED libopi )
 pkg_check_modules ( LIBUTILS REQUIRED libutils>=1.5.1 )
-pkg_check_modules ( LIBJSONCPP REQUIRED jsoncpp )
+pkg_check_modules ( LIBJSONCPP REQUIRED libjsoncpp )
 
 set (KGP_UTILS_VERSION_MAJOR 1)
 set (KGP_UTILS_VERSION_MINOR 0)
@@ -32,8 +32,7 @@ configure_file (
 
 # Set source list for kgp-sysinfo 
 set( sysinfo_src
-        ./sysinfo/kgpSysinfo.cpp
-        ./sysinfo/kgpSysinfo.h
+        "${PROJECT_SOURCE_DIR}/sysinfo/kgpSysinfo"
         )
 
 add_executable(${SYSINFO_APPNAME} "${sysinfo_src}")
