@@ -20,6 +20,7 @@ set -e
 
 case "$1" in
     configure)
+    	chmod u+s /usr/sbin/kgp-notify
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)
