@@ -5,7 +5,12 @@ include( FindPkgConfig )
 pkg_check_modules ( LIBOPI REQUIRED libopi )
 pkg_check_modules ( LIBUTILS REQUIRED libutils>=1.5.1 )
 pkg_check_modules ( LIBNOTIFY REQUIRED libkgpnotify )
-pkg_check_modules ( LIBJSONCPP REQUIRED jsoncpp )
+if (${CMAKE_SYSTEM_PROCESSOR} STREQUAL "armv7l")
+	pkg_check_modules ( LIBJSONCPP REQUIRED libjsoncpp )
+elseif (${CMAKE_SYSTEM_PROCESSOR} STREQUAL "x86_64")
+	pkg_check_modules ( LIBJSONCPP REQUIRED jsoncpp )
+endif()
+
 
 set (KGP_UTILS_VERSION_MAJOR 1)
 set (KGP_UTILS_VERSION_MINOR 0)
@@ -46,7 +51,7 @@ set( notifier_src
         )
 
 add_executable(${NOTIFIER_APPNAME} "${notifier_src}")
-target_link_libraries(${NOTIFIER_APPNAME} ${LIBNOTIFY_LDFLAGS} -lkgpnotify)
+target_link_libraries(${NOTIFIER_APPNAME} ${LIBJSONCPP_LDFLAGS} ${LIBNOTIFY_LDFLAGS} -lkgpnotify )
 
 
 add_subdirectory( test )
@@ -55,4 +60,5 @@ enable_testing()
 add_test( NAME TestApp COMMAND testapp )
 
 install( TARGETS ${SYSINFO_APPNAME} DESTINATION sbin )
+install( TARGETS ${NOTIFIER_APPNAME} DESTINATION sbin )
 

@@ -1,3 +1,9 @@
+kinguard-utils (1.3) vili; urgency=medium
+
+  * Added missing kgp-notifyer binary 
+
+ -- PA Nilsson <pa@openproducts.se>  Mon, 24 Apr 2017 09:22:05 +0000
+
 kinguard-utils (1.2) vili; urgency=medium
 
   * Added dependency on libkgpnotify1 
