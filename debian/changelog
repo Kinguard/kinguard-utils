@@ -1,3 +1,9 @@
+kinguard-utils (1.2) vili; urgency=medium
+
+  * Added dependency on libkgpnotify1 
+
+ -- PA Nilsson <pa@openproducts.se>  Mon, 24 Apr 2017 10:57:02 +0200
+
 kinguard-utils (1.1) vili; urgency=medium
 
   * Added notifier application. 
