@@ -20,7 +20,7 @@ Standards-Version: 3.9.4
 
 Package: kinguard-utils
 Architecture: any
-Depends: ${misc:Depends}, libkgpnotify1, libopi
+Depends: ${misc:Depends}, libkgpnotify1, libopi1
 Conflicts:
 Description: Misc system utilities
 

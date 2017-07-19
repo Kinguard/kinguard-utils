@@ -1,3 +1,9 @@
+kinguard-utils (1.5) vili; urgency=medium
+
+  * Updatd dependancies for pbuilder 
+
+ -- PA Nilsson <pa@openproducts.se>  Wed, 19 Jul 2017 16:14:14 +0200
+
 kinguard-utils (1.4) vili; urgency=medium
 
   * Fixed typo in dependancy 
