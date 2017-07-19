@@ -5,12 +5,7 @@ include( FindPkgConfig )
 pkg_check_modules ( LIBOPI REQUIRED libopi )
 pkg_check_modules ( LIBUTILS REQUIRED libutils>=1.5.1 )
 pkg_check_modules ( LIBNOTIFY REQUIRED libkgpnotify )
-if (${CMAKE_SYSTEM_PROCESSOR} STREQUAL "armv7l")
-	pkg_check_modules ( LIBJSONCPP REQUIRED libjsoncpp )
-elseif (${CMAKE_SYSTEM_PROCESSOR} STREQUAL "x86_64")
-	pkg_check_modules ( LIBJSONCPP REQUIRED jsoncpp )
-endif()
-
+pkg_check_modules ( LIBJSONCPP REQUIRED jsoncpp )
 
 set (KGP_UTILS_VERSION_MAJOR 1)
 set (KGP_UTILS_VERSION_MINOR 0)
