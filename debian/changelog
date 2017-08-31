@@ -1,3 +1,9 @@
+kinguard-utils (1.6) vili; urgency=medium
+
+  * Added support to handle added domains in libopi 
+
+ -- PA Nilsson <pa@openproducts.se>  Thu, 31 Aug 2017 16:26:20 +0200
+
 kinguard-utils (1.5) vili; urgency=medium
 
   * Updatd dependancies for pbuilder 
