@@ -42,6 +42,7 @@ kgp_storage::kgp_storage()
     this->StorageDevicePath = sysinfo.StorageDevicePath();
     this->StorageDeviceBlock = sysinfo.StorageDeviceBlock();
     this->StorageDevicePartition = sysinfo.StorageDevicePartition();
+    this->BackupRootPath = sysinfo.BackupRootPath();
 }
 
 Json::Value kgp_storage::jsonData()
@@ -51,6 +52,7 @@ Json::Value kgp_storage::jsonData()
     ret["StorageDevice"] = this->StorageDevice;
     ret["StorageDeviceBlock"] = this->StorageDeviceBlock;
     ret["StorageDevicePartition"] = this->StorageDevicePartition;
+    ret["BackupRootPath"] = this->BackupRootPath;
     return ret;
 }
 void kgp_storage::plainPrint()
@@ -59,6 +61,7 @@ void kgp_storage::plainPrint()
     printf("StorageDevice: %s\n", this->StorageDevice.c_str());
     printf("StorageDeviceBlock: %s\n", this->StorageDeviceBlock.c_str());
     printf("StorageDevicePartition: %s\n", this->StorageDevicePartition.c_str());
+    printf("BackupRootPath: %s\n", this->BackupRootPath.c_str());
     return;
 }
 

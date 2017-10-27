@@ -13,12 +13,12 @@ class TestNotifier : public TestFixture
     CPPUNIT_TEST_SUITE(TestNotifier);
 
     CPPUNIT_TEST(testSimpleMsg);
-    CPPUNIT_TEST(testEmptyLevel);
-    CPPUNIT_TEST(testEmptyBody);
-    CPPUNIT_TEST(testAckmsg);
-    CPPUNIT_TEST(testAckNomsg);
-    CPPUNIT_TEST(testBootCleanup);
-    CPPUNIT_TEST(testPersistantCleanup);
+//    CPPUNIT_TEST(testEmptyLevel);
+//    CPPUNIT_TEST(testEmptyBody);
+//    CPPUNIT_TEST(testAckmsg);
+//    CPPUNIT_TEST(testAckNomsg);
+//    CPPUNIT_TEST(testBootCleanup);
+//    CPPUNIT_TEST(testPersistantCleanup);
 
     CPPUNIT_TEST_SUITE_END();
 

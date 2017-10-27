@@ -49,6 +49,12 @@ private:
      */
     string StorageDevicePartition;
 
+    /**
+     * @brief BackupRootPath Get base path on where remote FS for backup is mounted.
+     * @return path to use for mount points, i.e. "/mnt/backup"
+     */
+    string BackupRootPath;
+
 public:
     kgp_storage();
     Json::Value jsonData();
