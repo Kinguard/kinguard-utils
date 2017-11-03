@@ -1,3 +1,9 @@
+kinguard-utils (1.8) vili; urgency=medium
+
+  * Added "Reset notifiers" script to opi-control/completed 
+
+ -- PA Nilsson <pa@openproducts.se>  Fri, 03 Nov 2017 08:49:06 +0100
+
 kinguard-utils (1.7) vili; urgency=medium
 
   * Added support for BackupRootPath in sysinfo 
