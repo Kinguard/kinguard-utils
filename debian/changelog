@@ -1,4 +1,4 @@
-kinguard-utils (1.9) UNRELEASED; urgency=medium
+kinguard-utils (1.9) vili; urgency=medium
 
   * Fixes #337, Trigger notifiers on cleanup call (-s) 
 
