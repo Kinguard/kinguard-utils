@@ -1,1 +1,1 @@
-reset-notifiers /etc/opi-control/completed/
+reset-notifiers.sh /usr/share/kinguard-utils
