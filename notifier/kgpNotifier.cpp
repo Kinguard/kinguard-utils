@@ -80,6 +80,7 @@ int main(int argc, char **argv)
 
         Message msg;
         msg.CleanUp(true);
+        msg.ResetNotifiers(LOG_DEBUG);
 
     }
     else if (ack)  // ack existing message
