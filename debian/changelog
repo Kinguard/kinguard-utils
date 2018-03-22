@@ -1,3 +1,9 @@
+kinguard-utils (1.10) vili; urgency=medium
+
+  * Renamed reset-notifier trigger for opi-control to make it run before the backup mount script. 
+
+ -- PA Nilsson <pa@openproducts.se>  Thu, 22 Mar 2018 08:32:21 +0100
+
 kinguard-utils (1.9) vili; urgency=medium
 
   * Fixes #337, Trigger notifiers on cleanup call (-s) 
