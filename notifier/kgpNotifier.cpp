@@ -12,6 +12,7 @@ void help()
     printf("\t-l level:\tThe log level for the new message (LOG_NOTICE, LOG_WARNING as string)\n");
     printf("\t-m body:\tThe body of the message\n");
     printf("\t-p:\t\tSet the message to be persistant, meaning not autoremoved over time\n");
+    printf("\t-q:\t\tTry to be really quiet\n");
     printf("\t-s:\t\tUse only at boot to trigger notifiers\n");
 }
 
@@ -36,7 +37,7 @@ int main(int argc, char **argv)
         help();
         return 1;
     }
-    while ((c = getopt (argc, argv, "a:bi:l:m:ps")) != -1)
+    while ((c = getopt (argc, argv, "a:bi:l:m:psq")) != -1)
     {
         switch (c)
         {
