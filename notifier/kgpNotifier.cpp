@@ -23,6 +23,8 @@ int main(int argc, char **argv)
     bool persistant = false;
     bool startup = false;
     bool ack = false;
+    bool quiet = false;
+
     string loglevel;
     string msgbody;
     string issuer = "";
@@ -59,6 +61,9 @@ int main(int argc, char **argv)
             break;
         case 's':
             startup = true;
+            break;
+        case 'q':
+            quiet = true;
             break;
         default:
             help();
@@ -99,11 +104,17 @@ int main(int argc, char **argv)
             if( triggers >= 0)
             {
                 // triggers will be <0 if something is wrong...
-                printf("%d\n",triggers);
+                if ( ! quiet )
+                {
+                    printf("%d\n",triggers);
+                }
             }
             else
             {
-                printf("Failed to ack message");
+                if ( ! quiet )
+                {
+                    printf("Failed to ack message");
+                }
                 return 1;
             }
 
@@ -127,7 +138,10 @@ int main(int argc, char **argv)
         msg.Details(loglevel,msgbody,issuer,persistant,clearonboot);
         id=msg.GetID();
         msg.Send();
-        printf("%s\n",id.c_str());
+        if ( ! quiet )
+        {
+            printf("%s\n",id.c_str());
+        }
 
     }
 
