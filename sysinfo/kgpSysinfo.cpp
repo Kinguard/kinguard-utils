@@ -1,6 +1,9 @@
 #include "kgpSysinfo.h"
+#include <syslog.h>
+#include <libutils/Logger.h>
 
 using namespace OPI;
+using namespace Utils;
 
 bool debug = false;
 
@@ -65,12 +68,15 @@ void kgp_storage::plainPrint()
     return;
 }
 
+
 void help()
 {
     printf("Usage: kgp-sysinfo [options]\n");
     printf("\tdefault:\tPrint all available system info as a Json string\n");
     printf("\t-t:\t\tPrint system type\n");
     printf("\t-s:\t\tPrint storage information\n");
+    printf("\t-c:\t\tScope to use in system config\n");
+    printf("\t-k:\t\tSystem config key to be read\n");
     printf("\t-p:\t\tPrint plaintext istead of Json\n");
     printf("\t-d:\t\tPrint debug\n");
 }
@@ -82,11 +88,12 @@ int main(int argc, char **argv)
     bool getStorage = false;
     bool getType = false;
     bool getAll = false;
+    string configScope, configKey;
     int c;
     Json::Value retval(Json::objectValue);
     Json::FastWriter writer;
 
-    while ((c = getopt (argc, argv, "dpst")) != -1)
+    while ((c = getopt (argc, argv, "dpstc:k:")) != -1)
     {
         switch (c)
         {
@@ -102,15 +109,27 @@ int main(int argc, char **argv)
         case 't':  // output type information
             getType = true;
             break;
+        case 'c':  // config scope
+            configScope = optarg;
+            break;
+        case 'k':  // output type information
+            configKey = optarg;
+            break;
         default:
             help();
             return 1;
         }
     }
-    getAll = ! (getType || getStorage);
+
+
+    // Divert logger to syslog
+    openlog( "kgp-sysinfo", LOG_PERROR, LOG_DAEMON);
+    logg.SetOutputter( [](const string& msg){ syslog(LOG_INFO, "%s",msg.c_str());});
+
+    getAll = ! (getType || getStorage || configKey.length() || configScope.length() );
     if (getAll)
     {
-        dprint("--  No specific parameter asked for, printing all information --");
+        dprint("--  No specific parameter asked for, printing all sysinfo information --");
     }
 
 
@@ -140,6 +159,67 @@ int main(int argc, char **argv)
         {
             storage.plainPrint();
         }
+    }
+    if( configScope.length() && configKey.length() )
+    {
+        SysConfig sysConfig;
+        bool success=false;
+        string value;
+        logg << Logger::Debug << "Trying to read config parameter" << lend;
+        try
+        {
+            value = sysConfig.GetKeyAsString(configScope,configKey);
+            success=true;
+        }
+        catch (runtime_error e)
+        {
+            logg << Logger::Info << "Unable to get Key '" << configKey.c_str() << "as 'string'" << lend;
+            logg << e.what() << lend;
+        }
+
+        if (! success )
+        {
+            try
+            {
+                value = to_string(sysConfig.GetKeyAsInt(configScope,configKey));
+                success=true;
+            }
+            catch (runtime_error e)
+            {
+                logg << Logger::Info << "Unable to get Key '" << configKey.c_str() << "as 'int'" << lend;
+                logg << e.what() << lend;
+            }
+        }
+        if (! success )
+        {
+            try
+            {
+                value = to_string(sysConfig.GetKeyAsBool(configScope,configKey));
+                success=true;
+            }
+            catch (runtime_error e)
+            {
+                logg << Logger::Info << "Unable to get Key '" << configKey.c_str() << "as 'Bool'" << lend;
+                logg << e.what() << lend;
+            }
+        }
+
+        if ( success )
+        {
+            if(asJson)
+            {
+                retval[configKey.c_str()] = value;
+            }
+            else
+            {
+                printf("%s\n",value.c_str());
+            }
+        }
+        else {
+            logg << "Failed to read key '" << configKey << "'" << lend;
+            return 1;
+        }
+
     }
     if(asJson)
     {

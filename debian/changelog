@@ -1,3 +1,9 @@
+kinguard-utils (1.12) vili; urgency=medium
+
+  * Added support to read config parameters. 
+
+ -- PA Nilsson <pa@openproducts.se>  Tue, 05 Jun 2018 10:29:36 +0200
+
 kinguard-utils (1.11) vili; urgency=medium
 
   * Added "quiet" flag 

@@ -8,7 +8,7 @@
 #include <unistd.h>
 #include <json/json.h>
 #include <libopi/SysInfo.h>
-
+#include <libopi/SysConfig.h>
 
 class kgp_sysType
 {

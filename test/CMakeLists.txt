@@ -4,6 +4,7 @@ set( testapp_src
 	test.cpp
         TestSysInfo.cpp
         TestNotifier.cpp
+	TestConfig.cpp
     )
 
 include_directories(
