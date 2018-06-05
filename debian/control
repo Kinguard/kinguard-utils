@@ -7,7 +7,7 @@ Build-Depends: debhelper (>= 8.0.0), cmake,
 	libutils-dev (>= 1.5.1),
 	libkgpnotify-dev,
 	libjsoncpp-dev,
-	libopi-dev (>= 1.6.0),
+	libopi-dev (>= 1.6.31),
 	libssl-dev,
 	libutils-dev,
 	libcppunit-dev,
@@ -20,7 +20,7 @@ Standards-Version: 3.9.4
 
 Package: kinguard-utils
 Architecture: any
-Depends: ${misc:Depends}, libkgpnotify1, libopi1
+Depends: ${misc:Depends}, libkgpnotify1, libopi1 (>= 1.6.31)
 Conflicts:
 Description: Misc system utilities
 
