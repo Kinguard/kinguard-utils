@@ -72,13 +72,13 @@ void kgp_storage::plainPrint()
 void help()
 {
     printf("Usage: kgp-sysinfo [options]\n");
+    printf("\t-d:\t\tPrint debug\n");
     printf("\tdefault:\tPrint all available system info as a Json string\n");
     printf("\t-t:\t\tPrint system type\n");
     printf("\t-s:\t\tPrint storage information\n");
-    printf("\t-c:\t\tScope to use in system config\n");
-    printf("\t-k:\t\tSystem config key to be read\n");
     printf("\t-p:\t\tPrint plaintext istead of Json\n");
-    printf("\t-d:\t\tPrint debug\n");
+    printf("\t-i systype:\t\tCheck system type, implies '-p'\n");
+    printf("\t-c 'scope' -k 'key':\tScope and Key to use in system config\n");
 }
 
 int main(int argc, char **argv)
@@ -88,12 +88,12 @@ int main(int argc, char **argv)
     bool getStorage = false;
     bool getType = false;
     bool getAll = false;
-    string configScope, configKey;
+    string configScope, configKey, checkType;
     int c;
     Json::Value retval(Json::objectValue);
     Json::FastWriter writer;
 
-    while ((c = getopt (argc, argv, "dpstc:k:")) != -1)
+    while ((c = getopt (argc, argv, "dpstc:k:i:")) != -1)
     {
         switch (c)
         {
@@ -115,6 +115,9 @@ int main(int argc, char **argv)
         case 'k':  // output type information
             configKey = optarg;
             break;
+        case 'i':  // output type information
+            checkType = optarg;
+            break;
         default:
             help();
             return 1;
@@ -126,7 +129,7 @@ int main(int argc, char **argv)
     openlog( "kgp-sysinfo", 0, LOG_DAEMON);
     logg.SetOutputter( [](const string& msg){ syslog(LOG_INFO, "%s",msg.c_str());});
 
-    getAll = ! (getType || getStorage || configKey.length() || configScope.length() );
+    getAll = ! (getType || getStorage || configKey.length() || configScope.length() || checkType.length() );
     if (getAll)
     {
         dprint("--  No specific parameter asked for, printing all sysinfo information --");
@@ -160,6 +163,13 @@ int main(int argc, char **argv)
             storage.plainPrint();
         }
     }
+
+    if(checkType.length()) {
+        bool res = checkType == sysinfo.SysTypeText[sysinfo.Type()];
+        printf("%d\n",res);
+        return ! res;
+    }
+
     if( configScope.length() && configKey.length() )
     {
         SysConfig sysConfig;

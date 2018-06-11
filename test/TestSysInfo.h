@@ -13,12 +13,16 @@ class TestSysInfo : public TestFixture
 //    CPPUNIT_TEST(testJsonSysonly);
 //    CPPUNIT_TEST(testJsonStorageonly);
 //    CPPUNIT_TEST(testWrongFlag);
+    CPPUNIT_TEST(testIsType);
+    CPPUNIT_TEST(testIsTypeFail);
     CPPUNIT_TEST_SUITE_END();
 
 public:
     void testJsonOutput();
     void testJsonSysonly();
     void testJsonStorageonly();
+    void testIsType();
+    void testIsTypeFail();
 
     void testWrongFlag();
 };

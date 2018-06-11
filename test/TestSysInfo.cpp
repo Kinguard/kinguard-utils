@@ -87,3 +87,27 @@ void TestSysInfo::testWrongFlag()
     CPPUNIT_ASSERT_EQUAL_MESSAGE("Incorrect return value",true,retval);
 
 }
+
+void TestSysInfo::testIsType()
+{
+    string app;
+    app = APP_PATH "/" SYSINFO_APPNAME " -p -i " + sysinfo.SysTypeText[sysinfo.Type()];
+    string Message;
+    bool retval;
+
+    tie(retval,Message) = Utils::Process::Exec(app);
+    CPPUNIT_ASSERT_MESSAGE("Test for sysType failed",retval);
+
+}
+
+void TestSysInfo::testIsTypeFail()
+{
+    string app;
+    app = APP_PATH "/" SYSINFO_APPNAME " -p -i foobar";
+    string Message;
+    bool retval;
+
+    tie(retval,Message) = Utils::Process::Exec(app);
+    CPPUNIT_ASSERT_MESSAGE("Foobar sysType test failed",!retval);
+
+}
