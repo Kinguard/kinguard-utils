@@ -123,7 +123,7 @@ int main(int argc, char **argv)
 
 
     // Divert logger to syslog
-    openlog( "kgp-sysinfo", LOG_PERROR, LOG_DAEMON);
+    openlog( "kgp-sysinfo", 0, LOG_DAEMON);
     logg.SetOutputter( [](const string& msg){ syslog(LOG_INFO, "%s",msg.c_str());});
 
     getAll = ! (getType || getStorage || configKey.length() || configScope.length() );
