@@ -15,6 +15,7 @@ class TestSysInfo : public TestFixture
 //    CPPUNIT_TEST(testWrongFlag);
     CPPUNIT_TEST(testIsType);
     CPPUNIT_TEST(testIsTypeFail);
+    CPPUNIT_TEST(testIsLocked);
     CPPUNIT_TEST_SUITE_END();
 
 public:
@@ -23,6 +24,7 @@ public:
     void testJsonStorageonly();
     void testIsType();
     void testIsTypeFail();
+    void testIsLocked();
 
     void testWrongFlag();
 };

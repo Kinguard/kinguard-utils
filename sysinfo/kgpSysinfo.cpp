@@ -77,6 +77,7 @@ void help()
     printf("\t-t:\t\tPrint system type\n");
     printf("\t-s:\t\tPrint storage information\n");
     printf("\t-p:\t\tPrint plaintext istead of Json\n");
+    printf("\t-l:\t\tCheck if system is locked, implies '-p'\n");
     printf("\t-i systype:\t\tCheck system type, implies '-p'\n");
     printf("\t-c 'scope' -k 'key':\tScope and Key to use in system config\n");
 }
@@ -88,48 +89,59 @@ int main(int argc, char **argv)
     bool getStorage = false;
     bool getType = false;
     bool getAll = false;
+    bool checkLocked = false;
     string configScope, configKey, checkType;
     int c;
     Json::Value retval(Json::objectValue);
     Json::FastWriter writer;
 
-    while ((c = getopt (argc, argv, "dpstc:k:i:")) != -1)
+    if ( argc == 1 )
     {
-        switch (c)
+        // get all syinfo data if no args are passed.
+        getAll = true;
+    }
+    else
+    {
+
+        while ((c = getopt (argc, argv, "dpstc:k:i:l")) != -1)
         {
-        case 'd': // output debug prints
-            debug = true;
-            break;
-        case 'p':  // plain text output
-            asJson = false;
-            break;
-        case 's':  // output storage information
-            getStorage = true;
-            break;
-        case 't':  // output type information
-            getType = true;
-            break;
-        case 'c':  // config scope
-            configScope = optarg;
-            break;
-        case 'k':  // output type information
-            configKey = optarg;
-            break;
-        case 'i':  // output type information
-            checkType = optarg;
-            break;
-        default:
-            help();
-            return 1;
+            switch (c)
+            {
+            case 'd': // output debug prints
+                debug = true;
+                break;
+            case 'p':  // plain text output
+                asJson = false;
+                break;
+            case 's':  // output storage information
+                getStorage = true;
+                break;
+            case 't':  // output type information
+                getType = true;
+                break;
+            case 'c':  // config scope
+                configScope = optarg;
+                break;
+            case 'k':  // output type information
+                configKey = optarg;
+                break;
+            case 'i':  // output type information
+                checkType = optarg;
+                break;
+            case 'l':  // output type information
+                checkLocked = true;
+                break;
+            default:
+                help();
+                return 1;
+            }
         }
     }
-
 
     // Divert logger to syslog
     openlog( "kgp-sysinfo", 0, LOG_DAEMON);
     logg.SetOutputter( [](const string& msg){ syslog(LOG_INFO, "%s",msg.c_str());});
 
-    getAll = ! (getType || getStorage || configKey.length() || configScope.length() || checkType.length() );
     if (getAll)
     {
         dprint("--  No specific parameter asked for, printing all sysinfo information --");
@@ -166,6 +178,23 @@ int main(int argc, char **argv)
 
     if(checkType.length()) {
         bool res = checkType == sysinfo.SysTypeText[sysinfo.Type()];
+        printf("%d\n",res);
+        return ! res;
+    }
+
+    if(checkLocked) {
+        Secop::State st = Secop::Unknown;
+
+        try
+        {
+            Secop s;
+            st  = s.Status();
+        }
+        catch( runtime_error& e)
+        {
+            logg << Logger::Info << "Failed to check status: "<<e.what()<<lend;
+        }
+        bool res = (st == Secop::Uninitialized) || (st == Secop::Unknown);
         printf("%d\n",res);
         return ! res;
     }

@@ -88,10 +88,34 @@ void TestSysInfo::testWrongFlag()
 
 }
 
+void TestSysInfo::testIsLocked()
+{
+    string msg = "Expecting secop to be running, is it not?";;
+    bool expectLocked=false;
+
+    string app;
+    app = APP_PATH "/" SYSINFO_APPNAME " -l";
+
+    string Message;
+    bool retval;
+
+    tie(retval,Message) = Utils::Process::Exec(app);
+
+    if (OPI::sysinfo.isPC() )
+    {
+        // running on PC, do not expect secop to be running.
+        expectLocked=true;
+        msg = "Not expecting secop to be running, is it?";
+    }
+
+    CPPUNIT_ASSERT_EQUAL_MESSAGE(msg,expectLocked,retval);
+
+}
+
 void TestSysInfo::testIsType()
 {
     string app;
-    app = APP_PATH "/" SYSINFO_APPNAME " -p -i " + sysinfo.SysTypeText[sysinfo.Type()];
+    app = APP_PATH "/" SYSINFO_APPNAME " -i " + sysinfo.SysTypeText[sysinfo.Type()];
     string Message;
     bool retval;
 
