@@ -80,6 +80,7 @@ void help()
     printf("\t-l:\t\tCheck if system is locked, implies '-p'\n");
     printf("\t-i systype:\t\tCheck system type, implies '-p'\n");
     printf("\t-c 'scope' -k 'key':\tScope and Key to use in system config\n");
+    printf("\t-w 'value' -c 'scope' -k 'key':\tWrite 'value' to 'scope->key' (always written as a string to sysconfig)\n");
 }
 
 int main(int argc, char **argv)
@@ -90,7 +91,7 @@ int main(int argc, char **argv)
     bool getType = false;
     bool getAll = false;
     bool checkLocked = false;
-    string configScope, configKey, checkType;
+    string configScope, configKey, configValue, checkType;
     int c;
     Json::Value retval(Json::objectValue);
     Json::FastWriter writer;
@@ -103,7 +104,7 @@ int main(int argc, char **argv)
     else
     {
 
-        while ((c = getopt (argc, argv, "dpstc:k:i:l")) != -1)
+        while ((c = getopt (argc, argv, "dpstw:c:k:i:l")) != -1)
         {
             switch (c)
             {
@@ -122,13 +123,16 @@ int main(int argc, char **argv)
             case 'c':  // config scope
                 configScope = optarg;
                 break;
-            case 'k':  // output type information
+            case 'k':  // key for sysconfig
                 configKey = optarg;
                 break;
-            case 'i':  // output type information
+            case 'w':  // value to write to sysconfig
+                configValue = optarg;
+                break;
+            case 'i':  // type to test for
                 checkType = optarg;
                 break;
-            case 'l':  // output type information
+            case 'l':  // check if locked
                 checkLocked = true;
                 break;
             default:
@@ -199,67 +203,92 @@ int main(int argc, char **argv)
         return ! res;
     }
 
-    if( configScope.length() && configKey.length() )
+    if( configScope.length() ||  configKey.length() || configValue.length() )
     {
         SysConfig sysConfig;
         bool success=false;
-        string value;
-        logg << Logger::Debug << "Trying to read config parameter" << lend;
-        try
+        if ( !( configScope.length() &&  configKey.length() ) )
         {
-            value = sysConfig.GetKeyAsString(configScope,configKey);
-            success=true;
-        }
-        catch (runtime_error e)
-        {
-            logg << Logger::Info << "Unable to get Key '" << configKey.c_str() << "as 'string'" << lend;
-            logg << e.what() << lend;
-        }
-
-        if (! success )
-        {
-            try
-            {
-                value = to_string(sysConfig.GetKeyAsInt(configScope,configKey));
-                success=true;
-            }
-            catch (runtime_error e)
-            {
-                logg << Logger::Info << "Unable to get Key '" << configKey.c_str() << "as 'int'" << lend;
-                logg << e.what() << lend;
-            }
-        }
-        if (! success )
-        {
-            try
-            {
-                value = to_string(sysConfig.GetKeyAsBool(configScope,configKey));
-                success=true;
-            }
-            catch (runtime_error e)
-            {
-                logg << Logger::Info << "Unable to get Key '" << configKey.c_str() << "as 'Bool'" << lend;
-                logg << e.what() << lend;
-            }
-        }
-
-        if ( success )
-        {
-            if(asJson)
-            {
-                retval[configKey.c_str()] = value;
-            }
-            else
-            {
-                printf("%s\n",value.c_str());
-            }
-        }
-        else {
-            logg << "Failed to read key '" << configKey << "'" << lend;
+            printf("Invalid parameters\n");
+            help();
             return 1;
         }
+        if ( configValue.length() )
+        {
+            logg << Logger::Debug << "Trying to write config parameter" << lend;
+            try
+            {
+                sysConfig.PutKey(configScope,configKey,configValue);
+                return 0;
+            }
+            catch (runtime_error& e)
+            {
+                logg << Logger::Info << "Unable to write Key '" << configKey.c_str() << "as 'string'" << lend;
+                logg << e.what() << lend;
+                return 1;
+            }
+        }
+        else
+        {
+            string value;
+            logg << Logger::Debug << "Trying to read config parameter" << lend;
+            try
+            {
+                value = sysConfig.GetKeyAsString(configScope,configKey);
+                success=true;
+            }
+            catch (runtime_error& e)
+            {
+                logg << Logger::Info << "Unable to get Key '" << configKey.c_str() << "as 'string'" << lend;
+                logg << e.what() << lend;
+            }
 
-    }
+            if (! success )
+            {
+                try
+                {
+                    value = to_string(sysConfig.GetKeyAsInt(configScope,configKey));
+                    success=true;
+                }
+                catch (runtime_error e)
+                {
+                    logg << Logger::Info << "Unable to get Key '" << configKey.c_str() << "as 'int'" << lend;
+                    logg << e.what() << lend;
+                }
+            }
+            if (! success )
+            {
+                try
+                {
+                    value = to_string(sysConfig.GetKeyAsBool(configScope,configKey));
+                    success=true;
+                }
+                catch (runtime_error e)
+                {
+                    logg << Logger::Info << "Unable to get Key '" << configKey.c_str() << "as 'Bool'" << lend;
+                    logg << e.what() << lend;
+                }
+            }
+
+            if ( success )
+            {
+                if(asJson)
+                {
+                    retval[configScope.c_str()][configKey.c_str()] = value;
+                }
+                else
+                {
+                    printf("%s\n",value.c_str());
+                }
+            }
+            else {
+                logg << "Failed to read key '" << configKey << "'" << lend;
+                return 1;
+            }
+
+        }
+    }  // end configOps
+
     if(asJson)
     {
         printf("%s",writer.write(retval).c_str());

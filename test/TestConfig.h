@@ -14,6 +14,7 @@ class TestConfig : public TestFixture
     CPPUNIT_TEST_SUITE(TestConfig);
     CPPUNIT_TEST(testReadJsonKey);
     CPPUNIT_TEST(testReadPlainKey);
+    CPPUNIT_TEST(testWriteKey);
     CPPUNIT_TEST_SUITE_END();
 
 public:
@@ -22,5 +23,6 @@ public:
 
     void testReadJsonKey();
     void testReadPlainKey();
+    void testWriteKey();
 
 };

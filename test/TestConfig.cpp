@@ -61,7 +61,7 @@ void TestConfig::testReadJsonKey()
     CPPUNIT_ASSERT(parsingSuccessful);
     CPPUNIT_ASSERT(parseDB);
 
-    const Json::Value theme = parsedFromString["theme"];
+    const Json::Value theme = parsedFromString["webapps"]["theme"];
     const Json::Value DBtheme = ConfigDB["webapps"]["theme"];
 
     CPPUNIT_ASSERT_EQUAL_MESSAGE("JSON parameter mismatch",DBtheme,theme);
@@ -87,5 +87,27 @@ void TestConfig::testReadPlainKey()
     const Json::Value DBtheme = ConfigDB["webapps"]["theme"];
 
     CPPUNIT_ASSERT_EQUAL_MESSAGE("Plain text parameter mismatch",DBtheme.asString(),String::Chomp(key));
+}
+
+void TestConfig::testWriteKey()
+{
+    string app;
+    string value,retstring,keyval;
+    string scope="testscope";
+    string key="testkey";
+
+    OPI::SysConfig sysConfig;
+
+    value = Utils::String::UUID();
+
+    app = APP_PATH "/" SYSINFO_APPNAME " -c "+scope+" -k "+key+" -w "+value;
+    bool retval;
+
+    tie(retval,retstring) = Utils::Process::Exec(app);
+    CPPUNIT_ASSERT_MESSAGE("Failed to write key to sysconfig",retval);
+
+    keyval=sysConfig.GetKeyAsString(scope,key);
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Failed to read back the key",keyval,value);
+
 }
 
