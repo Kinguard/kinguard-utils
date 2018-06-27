@@ -1,3 +1,9 @@
+kinguard-utils (1.14) vili; urgency=medium
+
+  * Added support to write sysconfig parameters 
+
+ -- PA Nilsson <pa@openproducts.se>  Wed, 27 Jun 2018 14:34:38 +0200
+
 kinguard-utils (1.13) vili; urgency=medium
 
   * Updated dep on libopi-version 
