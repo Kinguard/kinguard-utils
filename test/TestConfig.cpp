@@ -111,3 +111,49 @@ void TestConfig::testWriteKey()
 
 }
 
+void TestConfig::testWriteBoolKey()
+{
+    string app;
+    string value,retstring;
+    bool keyval;
+    string scope="testscope";
+    string key="testBoolkey";
+
+    OPI::SysConfig sysConfig;
+
+    value = "True";
+
+    app = APP_PATH "/" SYSINFO_APPNAME " -b -c "+scope+" -k "+key+" -w "+value;
+    bool retval;
+
+    tie(retval,retstring) = Utils::Process::Exec(app);
+    CPPUNIT_ASSERT_MESSAGE("Failed to write boolean key to sysconfig",retval);
+
+    keyval=sysConfig.GetKeyAsBool(scope,key);
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Failed to read back the boolean key",keyval,true);
+
+}
+
+void TestConfig::testWriteNumKey()
+{
+    string app;
+    string value,retstring;
+    int keyval;
+    string scope="testscope";
+    string key="testNumkey";
+
+    OPI::SysConfig sysConfig;
+
+    value = "10";
+
+    app = APP_PATH "/" SYSINFO_APPNAME " -n -c "+scope+" -k "+key+" -w "+value;
+    bool retval;
+
+    tie(retval,retstring) = Utils::Process::Exec(app);
+    CPPUNIT_ASSERT_MESSAGE("Failed to write numeric key to sysconfig",retval);
+
+    keyval=sysConfig.GetKeyAsInt(scope,key);
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Failed to read back the numeric key",keyval,stoi(value));
+
+}
+

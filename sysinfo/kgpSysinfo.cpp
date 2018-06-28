@@ -1,6 +1,7 @@
 #include "kgpSysinfo.h"
 #include <syslog.h>
 #include <libutils/Logger.h>
+#include <algorithm>
 
 using namespace OPI;
 using namespace Utils;
@@ -80,7 +81,16 @@ void help()
     printf("\t-l:\t\tCheck if system is locked, implies '-p'\n");
     printf("\t-i systype:\t\tCheck system type, implies '-p'\n");
     printf("\t-c 'scope' -k 'key':\tScope and Key to use in system config\n");
-    printf("\t-w 'value' -c 'scope' -k 'key':\tWrite 'value' to 'scope->key' (always written as a string to sysconfig)\n");
+    printf("\t-w 'value' -c 'scope' -k 'key':\tWrite 'value' to 'scope->key' (default written as a string to sysconfig)\n");
+    printf("\t-b:\t\tValue to write to config is boolean\n");
+    printf("\t-n:\t\tValue to write to config is numeric\n");
+}
+
+string str_tolower(string s) {
+    transform(s.begin(), s.end(), s.begin(),
+              [](unsigned char c){ return tolower(c); } // correct
+              );
+    return s;
 }
 
 int main(int argc, char **argv)
@@ -91,6 +101,8 @@ int main(int argc, char **argv)
     bool getType = false;
     bool getAll = false;
     bool checkLocked = false;
+    bool isNumeric = false;
+    bool isBool = false;
     string configScope, configKey, configValue, checkType;
     int c;
     Json::Value retval(Json::objectValue);
@@ -103,8 +115,8 @@ int main(int argc, char **argv)
     }
     else
     {
-
-        while ((c = getopt (argc, argv, "dpstw:c:k:i:l")) != -1)
+#include <algorithm>
+        while ((c = getopt (argc, argv, "bndpstw:c:k:i:l")) != -1)
         {
             switch (c)
             {
@@ -134,6 +146,12 @@ int main(int argc, char **argv)
                 break;
             case 'l':  // check if locked
                 checkLocked = true;
+                break;
+            case 'b':  // arg to write to config is boolean
+                isBool = true;
+                break;
+            case 'n':  // arg to write to config is numeric
+                isNumeric = true;
                 break;
             default:
                 help();
@@ -215,11 +233,41 @@ int main(int argc, char **argv)
         }
         if ( configValue.length() )
         {
+            if (isNumeric && isBool)
+            {
+                logg << Logger::Error << "Value to write can not be both boolean and numeric" << lend;
+                return 1;
+            }
             logg << Logger::Debug << "Trying to write config parameter" << lend;
             try
             {
-                sysConfig.PutKey(configScope,configKey,configValue);
-                return 0;
+                try {
+                    if (isNumeric)
+                    {
+                        sysConfig.PutKey(configScope,configKey,stoi(configValue));
+                    }
+                    else if (isBool)
+                    {
+                        bool boolval = false;
+                        configValue = str_tolower(configValue);
+                        if (configValue == "1" || configValue == "true" )
+                        {
+                            boolval = true;
+                        }
+                        sysConfig.PutKey(configScope,configKey,boolval);
+                    }
+                    else
+                    {
+                        sysConfig.PutKey(configScope,configKey,configValue);
+                    }
+                    return 0;
+                }
+                catch (const invalid_argument& ia) {
+                    dprint("Invalid argument: ");
+                    dprint(ia.what());
+                    logg << Logger::Error << "Invalid argument: " << ia.what() << lend;
+                    return 1;
+                }
             }
             catch (runtime_error& e)
             {
