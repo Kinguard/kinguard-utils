@@ -2,7 +2,6 @@
 #include <syslog.h>
 #include <libutils/Logger.h>
 #include <algorithm>
-
 using namespace OPI;
 using namespace Utils;
 
@@ -115,7 +114,6 @@ int main(int argc, char **argv)
     }
     else
     {
-#include <algorithm>
         while ((c = getopt (argc, argv, "bndpstw:c:k:i:l")) != -1)
         {
             switch (c)
@@ -223,7 +221,6 @@ int main(int argc, char **argv)
 
     if( configScope.length() ||  configKey.length() || configValue.length() )
     {
-        SysConfig sysConfig;
         bool success=false;
         if ( !( configScope.length() &&  configKey.length() ) )
         {
@@ -233,6 +230,7 @@ int main(int argc, char **argv)
         }
         if ( configValue.length() )
         {
+            SysConfig sysConfig(true);
             if (isNumeric && isBool)
             {
                 logg << Logger::Error << "Value to write can not be both boolean and numeric" << lend;
@@ -278,6 +276,7 @@ int main(int argc, char **argv)
         }
         else
         {
+            SysConfig sysConfig;
             string value;
             logg << Logger::Debug << "Trying to read config parameter" << lend;
             try
