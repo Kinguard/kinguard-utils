@@ -1,3 +1,9 @@
+kinguard-utils (1.16) vili; urgency=medium
+
+  * Updated build-dep on libopi-dev 
+
+ -- PA Nilsson <pa@openproducts.se>  Fri, 29 Jun 2018 11:56:19 +0200
+
 kinguard-utils (1.15) vili; urgency=medium
 
   * Updated to support libopi write flag for sysconfig 
