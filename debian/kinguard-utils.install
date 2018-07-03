@@ -1,1 +1,2 @@
 reset-notifiers.sh /usr/share/kinguard-utils
+sysconfigWrapper.php /usr/share/kinguard-utils
