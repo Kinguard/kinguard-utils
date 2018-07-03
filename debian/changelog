@@ -1,3 +1,9 @@
+kinguard-utils (1.18) vili; urgency=medium
+
+  * Fixed paths in php wrapper. 
+
+ -- PA Nilsson <pa@openproducts.se>  Tue, 03 Jul 2018 13:39:40 +0200
+
 kinguard-utils (1.17) vili; urgency=medium
 
   * Added php wrapper to read sysconfig. 

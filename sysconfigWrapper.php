@@ -13,13 +13,13 @@
 	function getConfigValue($ns, $key, $json = false) {
 		if ($json) {
 			// return the value as json, can be good if the type is needed.
-			$config = shell_exec("kgp-sysinfo -c $ns -k $key");
+			$config = shell_exec("/usr/sbin/kgp-sysinfo -c $ns -k $key");
 			if ($config) {
 				return rtrim($config);
 			}
 		} else
 			{
-			$config = shell_exec("kgp-sysinfo -p -c $ns -k $key");
+			$config = shell_exec("/usr/sbin/kgp-sysinfo -p -c $ns -k $key");
 			if ($config) {
 				return rtrim($config);
 			}
