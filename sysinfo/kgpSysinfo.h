@@ -24,6 +24,28 @@ public:
     void plainPrint();
 };
 
+class kgp_deviceinfo
+{
+private:
+    /**
+     * @brief NetworkDevice Get primary network interface
+     * @return string with name of network device (fron sysinfo)
+     */
+    string NetworkDevice;
+
+    /**
+     * @brief SerialNumber Get the serial number from flash
+     * @return string with the serial number
+     */
+    string SerialNumber;
+
+public:
+    kgp_deviceinfo();
+    Json::Value jsonData();
+    void plainPrint();
+
+};
+
 class kgp_storage
 {
 private:

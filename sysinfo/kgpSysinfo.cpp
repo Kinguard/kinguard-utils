@@ -39,6 +39,27 @@ void kgp_sysType::plainPrint()
 }
 
 
+kgp_deviceinfo::kgp_deviceinfo()
+{
+    this->SerialNumber = sysinfo.SerialNumber();
+    this->NetworkDevice = sysinfo.NetworkDevice();
+}
+
+Json::Value kgp_deviceinfo::jsonData()
+{
+    Json::Value ret;
+    ret["SerialNumber"] = this->SerialNumber;
+    ret["NetworkDevice"] = this->NetworkDevice;
+    return ret;
+}
+
+void kgp_deviceinfo::plainPrint()
+{
+    printf("SerialNumber: %s\n", this->SerialNumber.c_str());
+    printf("NetworkDevice: %s\n", this->NetworkDevice.c_str());
+}
+
+
 kgp_storage::kgp_storage()
 {
     this->StorageDevice = sysinfo.StorageDevice();
@@ -99,6 +120,7 @@ int main(int argc, char **argv)
     bool asJson = true;
     bool getStorage = false;
     bool getType = false;
+    bool getDeviceInfo = false;
     bool getAll = false;
     bool checkLocked = false;
     bool isNumeric = false;
@@ -116,7 +138,7 @@ int main(int argc, char **argv)
     }
     else
     {
-        while ((c = getopt (argc, argv, "abndpstw:c:k:i:l")) != -1)
+        while ((c = getopt (argc, argv, "abc:dhi:k:lnpstuw:")) != -1)
         {
             switch (c)
             {
@@ -156,6 +178,10 @@ int main(int argc, char **argv)
             case 'n':  // arg to write to config is numeric
                 isNumeric = true;
                 break;
+            case 'u':
+                getDeviceInfo = true;
+                break;
+            case 'h':
             default:
                 help();
                 return 1;
@@ -199,6 +225,20 @@ int main(int argc, char **argv)
         {
             storage.plainPrint();
         }
+    }
+    if(getDeviceInfo || getAll)
+    {
+        dprint("Printing device info");
+        kgp_deviceinfo DeviceInfo;
+        if(asJson)
+        {
+            retval["deviceinfo"] = DeviceInfo.jsonData();
+        }
+        else
+        {
+            DeviceInfo.plainPrint();
+        }
+
     }
 
     if(checkType.length()) {

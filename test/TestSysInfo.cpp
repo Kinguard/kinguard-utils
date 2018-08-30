@@ -73,6 +73,28 @@ void TestSysInfo::testJsonStorageonly()
 
 }
 
+void TestSysInfo::testJsonDeviceInfo()
+{
+    // check that only the device info is included
+    string app;
+    app = APP_PATH "/" SYSINFO_APPNAME " -u";
+
+    Json::Value parsedFromString;
+    string jsonMessage;
+    bool parsingSuccessful;
+    bool retval;
+
+    tie(retval,jsonMessage) = Utils::Process::Exec(app);
+    parsingSuccessful = reader.parse(jsonMessage,parsedFromString);
+    CPPUNIT_ASSERT_MESSAGE("Got more than one item", parsedFromString.size() == 1 );
+
+
+    const Json::Value deviceinfo = parsedFromString["deviceinfo"];
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Incorrect network device", sysinfo.NetworkDevice(), deviceinfo.get("NetworkDevice","").asString() );
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Incorrect network device", sysinfo.SerialNumber(), deviceinfo.get("SerialNumber","").asString() );
+
+}
+
 void TestSysInfo::testWrongFlag()
 {
     // check that only the return value is correct when an incorrect flag is passed.
