@@ -1,3 +1,9 @@
+kinguard-utils (1.19) vili; urgency=medium
+
+  * Added possibility to read and write StringLists 
+
+ -- PA Nilsson <pa@openproducts.se>  Thu, 30 Aug 2018 09:17:36 +0200
+
 kinguard-utils (1.18) vili; urgency=medium
 
   * Fixed paths in php wrapper. 
