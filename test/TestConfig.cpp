@@ -1,3 +1,4 @@
+#include <algorithm>
 #include "TestConfig.h"
 #include <json/json.h>
 #include <libutils/Process.h>
@@ -6,6 +7,7 @@
 #include <libutils/Logger.h>
 #include "Config.h"
 #include <libutils/String.h>
+
 
 CPPUNIT_TEST_SUITE_REGISTRATION(TestConfig);
 
@@ -157,3 +159,66 @@ void TestConfig::testWriteNumKey()
 
 }
 
+void TestConfig::testWriteStringList()
+{
+    string app;
+    string retstring;
+    OPI::SysConfig sysConfig;
+
+    string scope="testscope";
+    string key="testStringList";
+    list<string> listValues;
+    string value1 = "foo";
+    string value2 = "bar";
+    string value = value1+","+value2;
+
+    app = APP_PATH "/" SYSINFO_APPNAME " -c "+scope+" -k "+key+" -a -w "+value;
+    bool retval;
+
+    tie(retval,retstring) = Utils::Process::Exec(app);
+    CPPUNIT_ASSERT_MESSAGE("Failed to write numeric key to sysconfig",retval);
+
+    listValues=sysConfig.GetKeyAsStringList(scope,key);
+
+    list<string>::iterator findIter;
+    findIter = std::find(listValues.begin(), listValues.end(), value1);
+    CPPUNIT_ASSERT_MESSAGE("Failed find value1 in list", !(findIter == listValues.end()) );
+
+    findIter = std::find(listValues.begin(), listValues.end(), value2);
+    CPPUNIT_ASSERT_MESSAGE("Failed find value2 in list", !(findIter == listValues.end()) );
+
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Wrong size of list",2,(int)listValues.size());
+
+}
+
+void TestConfig::testReadJsonStringList()
+{
+    string app;
+    string scope="foo";
+    string key="bar";
+
+    app = APP_PATH "/" SYSINFO_APPNAME " -c "+scope+" -k "+key;
+
+    Json::Value parsedFromString, ConfigDB;
+    string jsonMessage, jsonConfigDB;
+    bool parsingSuccessful, parseDB;
+    bool retval;
+
+    tie(retval,jsonMessage) = Utils::Process::Exec(app);
+    parsingSuccessful = jsonreader.parse(jsonMessage,parsedFromString);
+
+    jsonConfigDB = File::GetContentAsString(TEST_DB);
+    parseDB = jsonreader.parse(jsonConfigDB,ConfigDB);
+
+    CPPUNIT_ASSERT(parsingSuccessful);
+    CPPUNIT_ASSERT(parseDB);
+
+    Json::Value keyVal(Json::arrayValue);
+    Json::Value dbKeyVal(Json::arrayValue);
+
+    keyVal = parsedFromString[scope][key];
+    dbKeyVal = ConfigDB[scope][key];
+
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("JSON list size mismatch",dbKeyVal.size(),keyVal.size());
+
+}

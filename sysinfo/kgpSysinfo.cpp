@@ -83,6 +83,7 @@ void help()
     printf("\t-w 'value' -c 'scope' -k 'key':\tWrite 'value' to 'scope->key' (default written as a string to sysconfig)\n");
     printf("\t-b:\t\tValue to write to config is boolean\n");
     printf("\t-n:\t\tValue to write to config is numeric\n");
+    printf("\t-a:\t\tValue to write to config is a comma separated list of strings\n");
 }
 
 string str_tolower(string s) {
@@ -102,6 +103,7 @@ int main(int argc, char **argv)
     bool checkLocked = false;
     bool isNumeric = false;
     bool isBool = false;
+    bool isList = false;
     string configScope, configKey, configValue, checkType;
     int c;
     Json::Value retval(Json::objectValue);
@@ -114,7 +116,7 @@ int main(int argc, char **argv)
     }
     else
     {
-        while ((c = getopt (argc, argv, "bndpstw:c:k:i:l")) != -1)
+        while ((c = getopt (argc, argv, "abndpstw:c:k:i:l")) != -1)
         {
             switch (c)
             {
@@ -144,6 +146,9 @@ int main(int argc, char **argv)
                 break;
             case 'l':  // check if locked
                 checkLocked = true;
+                break;
+            case 'a':  // arg to write to config is list of strings
+                isList = true;
                 break;
             case 'b':  // arg to write to config is boolean
                 isBool = true;
@@ -254,6 +259,14 @@ int main(int argc, char **argv)
                         }
                         sysConfig.PutKey(configScope,configKey,boolval);
                     }
+                    else if (isList)
+                    {
+                        list<string> listVals;
+                        Utils::String::Split(configValue,listVals,",");
+
+                        sysConfig.PutKey(configScope,configKey,listVals);
+                    }
+
                     else
                     {
                         sysConfig.PutKey(configScope,configKey,configValue);
@@ -309,6 +322,51 @@ int main(int argc, char **argv)
                 {
                     value = to_string(sysConfig.GetKeyAsBool(configScope,configKey));
                     success=true;
+                }
+                catch (runtime_error e)
+                {
+                    logg << Logger::Info << "Unable to get Key '" << configKey.c_str() << "as 'Bool'" << lend;
+                    logg << e.what() << lend;
+                }
+            }
+
+            if (! success )
+            {
+                try
+                {
+                    list<string> listValues;
+                    // Try to get the value as list of strings
+                    listValues = sysConfig.GetKeyAsStringList(configScope,configKey);
+
+                    if(asJson)
+                    {
+                        // can not use the "normal" json output below, it uses a single string value.
+                        Json::Value jsonlist(Json::arrayValue);
+                        for (auto x:listValues) {
+                           jsonlist.append(x);
+                        }
+
+                        retval[configScope.c_str()][configKey.c_str()]=jsonlist;
+                        printf("%s",writer.write(retval).c_str());
+                        return 0;
+                    }
+                    else
+                    {
+                        //join values
+                        bool first=true;
+                        for (auto x : listValues) {
+                           if (first)
+                           {
+                               value = x;
+                               first = false;
+                           }
+                           else
+                           {
+                               value += ","+x;
+                           }
+                        }
+                        success=true;
+                    }
                 }
                 catch (runtime_error e)
                 {

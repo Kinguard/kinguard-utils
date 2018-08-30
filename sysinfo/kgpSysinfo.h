@@ -10,6 +10,7 @@
 #include <libopi/SysInfo.h>
 #include <libopi/SysConfig.h>
 #include <libopi/Secop.h>
+#include <libutils/String.h>
 
 class kgp_sysType
 {
