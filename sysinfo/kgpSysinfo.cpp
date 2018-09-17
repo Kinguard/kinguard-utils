@@ -94,12 +94,13 @@ void help()
 {
     printf("Usage: kgp-sysinfo [options]\n");
     printf("\t-d:\t\tPrint debug\n");
-    printf("\tdefault:\tPrint all available system info as a Json string\n");
+	printf("\tdefault:\tPrint all available system info as a Json string\n");
     printf("\t-t:\t\tPrint system type\n");
     printf("\t-s:\t\tPrint storage information\n");
     printf("\t-p:\t\tPrint plaintext istead of Json\n");
     printf("\t-l:\t\tCheck if system is locked, implies '-p'\n");
-    printf("\t-i systype:\t\tCheck system type, implies '-p'\n");
+	printf("\t-q:\t\tCheck if a config varialbe exists and only set return value, needs -l,-i or -c & -k\n");
+	printf("\t-i systype:\t\tCheck system type, implies '-p'\n");
     printf("\t-c 'scope' -k 'key':\tScope and Key to use in system config\n");
     printf("\t-w 'value' -c 'scope' -k 'key':\tWrite 'value' to 'scope->key' (default written as a string to sysconfig)\n");
     printf("\t-b:\t\tValue to write to config is boolean\n");
@@ -126,6 +127,7 @@ int main(int argc, char **argv)
     bool isNumeric = false;
     bool isBool = false;
     bool isList = false;
+	bool quiet = false;
     string configScope, configKey, configValue, checkType;
     int c;
     Json::Value retval(Json::objectValue);
@@ -138,7 +140,7 @@ int main(int argc, char **argv)
     }
     else
     {
-        while ((c = getopt (argc, argv, "abc:dhi:k:lnpstuw:")) != -1)
+		while ((c = getopt (argc, argv, "abc:dhi:k:lnpstuqw:")) != -1)
         {
             switch (c)
             {
@@ -181,6 +183,9 @@ int main(int argc, char **argv)
             case 'u':
                 getDeviceInfo = true;
                 break;
+			case 'q':
+				quiet = true;
+				break;
             case 'h':
             default:
                 help();
@@ -243,7 +248,10 @@ int main(int argc, char **argv)
 
     if(checkType.length()) {
         bool res = checkType == sysinfo.SysTypeText[sysinfo.Type()];
-        printf("%d\n",res);
+		if ( ! quiet )
+		{
+			printf("%d\n",res);
+		}
         return ! res;
     }
 
@@ -260,7 +268,10 @@ int main(int argc, char **argv)
             logg << Logger::Info << "Failed to check status: "<<e.what()<<lend;
         }
         bool res = (st == Secop::Uninitialized) || (st == Secop::Unknown);
-        printf("%d\n",res);
+		if ( ! quiet )
+		{
+			printf("%d\n",res);
+		}
         return ! res;
     }
 
@@ -417,14 +428,17 @@ int main(int argc, char **argv)
 
             if ( success )
             {
-                if(asJson)
-                {
-                    retval[configScope.c_str()][configKey.c_str()] = value;
-                }
-                else
-                {
-                    printf("%s\n",value.c_str());
-                }
+				if ( ! quiet )
+				{
+					if(asJson)
+					{
+						retval[configScope.c_str()][configKey.c_str()] = value;
+					}
+					else
+					{
+						printf("%s\n",value.c_str());
+					}
+				}
             }
             else {
                 logg << "Failed to read key '" << configKey << "'" << lend;
@@ -436,7 +450,10 @@ int main(int argc, char **argv)
 
     if(asJson)
     {
-        printf("%s",writer.write(retval).c_str());
+		if ( ! quiet )
+		{
+			printf("%s",writer.write(retval).c_str());
+		}
     }
 
 	return 0;
