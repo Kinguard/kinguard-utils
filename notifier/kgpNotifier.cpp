@@ -127,7 +127,7 @@ int main(int argc, char **argv)
         NewMessage msg;
         if(ltoi(loglevel) < 0)
         {
-            printf("Invalid loglevel: %d \n",ltoi(loglevel));
+            printf("Invalid loglevel: %d (%s)\n",ltoi(loglevel), loglevel.c_str());
             return 1;
         }
         if(msgbody.size() == 0)
