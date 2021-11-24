@@ -1,5 +1,4 @@
 #include "TestSysInfo.h"
-#include <json/json.h>
 #include <libutils/Process.h>
 #include <libopi/SysInfo.h>
 #include "Config.h"
@@ -15,23 +14,22 @@ void TestSysInfo::testJsonOutput()
     string app;
     app = APP_PATH "/" SYSINFO_APPNAME;
 
-    Json::Value parsedFromString;
+	json parsedFromString;
     string jsonMessage;
-    bool parsingSuccessful;
     bool retval;
 
     tie(retval,jsonMessage) = Utils::Process::Exec(app);
 
-    parsingSuccessful = reader.parse(jsonMessage,parsedFromString);
-    CPPUNIT_ASSERT(parsingSuccessful);
+	CPPUNIT_ASSERT_NO_THROW(parsedFromString = json::parse(jsonMessage) );
 
-    const Json::Value storage = parsedFromString["storage"];
+	const json storage = parsedFromString["storage"];
     CPPUNIT_ASSERT_MESSAGE("Storage must exist here", storage.size() > 0);
 
-    const Json::Value systype = parsedFromString["systype"];
+	const json systype = parsedFromString["systype"];
     CPPUNIT_ASSERT_MESSAGE("Systype must exist here", systype.size() > 0);
 
-    CPPUNIT_ASSERT_EQUAL(systype.get("type",0).asInt(), (int)sysinfo.Type());
+	int typ = systype.contains("type")?systype["type"].get<int>():0;
+	CPPUNIT_ASSERT_EQUAL(typ, (int)sysinfo.Type());
 
 }
 
@@ -41,15 +39,17 @@ void TestSysInfo::testJsonSysonly()
     string app;
     app = APP_PATH "/" SYSINFO_APPNAME " -t";
 
-    Json::Value parsedFromString;
+	json parsedFromString;
     string jsonMessage;
-    bool parsingSuccessful;
-    bool retval;
+	//bool parsingSuccessful;
+	bool retval;
 
-    tie(retval,jsonMessage) = Utils::Process::Exec(app);
-    parsingSuccessful = reader.parse(jsonMessage,parsedFromString);
+	tie(retval,jsonMessage) = Utils::Process::Exec(app);
+	//parsingSuccessful = reader.parse(jsonMessage,parsedFromString);
 
-    const Json::Value storage = parsedFromString["storage"];
+	CPPUNIT_ASSERT_NO_THROW(parsedFromString = json::parse(jsonMessage) );
+
+	const json storage = parsedFromString["storage"];
     CPPUNIT_ASSERT_MESSAGE("Storage part may not exist here", storage.size() == 0 );
 
 }
@@ -60,15 +60,16 @@ void TestSysInfo::testJsonStorageonly()
     string app;
     app = APP_PATH "/" SYSINFO_APPNAME " -s";
 
-    Json::Value parsedFromString;
+	json parsedFromString;
     string jsonMessage;
-    bool parsingSuccessful;
-    bool retval;
+	//bool parsingSuccessful;
+	bool retval;
 
-    tie(retval,jsonMessage) = Utils::Process::Exec(app);
-    parsingSuccessful = reader.parse(jsonMessage,parsedFromString);
+	tie(retval,jsonMessage) = Utils::Process::Exec(app);
+	//parsingSuccessful = reader.parse(jsonMessage,parsedFromString);
+	CPPUNIT_ASSERT_NO_THROW(parsedFromString = json::parse(jsonMessage) );
 
-    const Json::Value storage = parsedFromString["systype"];
+	const json storage = parsedFromString["systype"];
     CPPUNIT_ASSERT_MESSAGE("Systype part may not exist here", storage.size() == 0 );
 
 }
@@ -79,19 +80,22 @@ void TestSysInfo::testJsonDeviceInfo()
     string app;
     app = APP_PATH "/" SYSINFO_APPNAME " -u";
 
-    Json::Value parsedFromString;
+	json parsedFromString;
     string jsonMessage;
-    bool parsingSuccessful;
-    bool retval;
+	//bool parsingSuccessful;
+	bool retval;
 
-    tie(retval,jsonMessage) = Utils::Process::Exec(app);
-    parsingSuccessful = reader.parse(jsonMessage,parsedFromString);
-    CPPUNIT_ASSERT_MESSAGE("Got more than one item", parsedFromString.size() == 1 );
+	tie(retval,jsonMessage) = Utils::Process::Exec(app);
+	//parsingSuccessful = reader.parse(jsonMessage,parsedFromString);
+	CPPUNIT_ASSERT_NO_THROW(parsedFromString = json::parse(jsonMessage) );
+	CPPUNIT_ASSERT_MESSAGE("Got more than one item", parsedFromString.size() == 1 );
 
 
-    const Json::Value deviceinfo = parsedFromString["deviceinfo"];
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Incorrect network device", sysinfo.NetworkDevice(), deviceinfo.get("NetworkDevice","").asString() );
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Incorrect network device", sysinfo.SerialNumber(), deviceinfo.get("SerialNumber","").asString() );
+	const json deviceinfo = parsedFromString["deviceinfo"];
+	string netdev = deviceinfo.contains("NetworkDevice")?deviceinfo["NetworkDevice"]:"";
+	CPPUNIT_ASSERT_EQUAL_MESSAGE("Incorrect network device", sysinfo.NetworkDevice(), netdev );
+	string sernum = deviceinfo.contains("SerialNumber")?deviceinfo["SerialNumber"]:"";
+	CPPUNIT_ASSERT_EQUAL_MESSAGE("Incorrect network device", sysinfo.SerialNumber(), sernum );
 
 }
 

@@ -1,25 +1,28 @@
 #include "kgpNotifier.h"
 
+#include <iostream>
+
 using namespace Notify;
 
 
 void help()
 {
-    printf("Usage: kgp-notifer [options]\n");
-    printf("\t-a id:\t\tAck message with 'id'\n");
-    printf("\t-b:\t\tFor a new message, set it not to be removed on reboot\n");
-    printf("\t-i issuer:\tAdd 'issuer' to new message\n");
-    printf("\t-l level:\tThe log level for the new message (LOG_NOTICE, LOG_WARNING as string)\n");
-    printf("\t-m body:\tThe body of the message\n");
-    printf("\t-p:\t\tSet the message to be persistant, meaning not autoremoved over time\n");
-    printf("\t-q:\t\tTry to be really quiet\n");
-    printf("\t-s:\t\tUse only at boot to trigger notifiers\n");
+	std::cout
+	<< "Usage: kgp-notifer [options]\n"
+	<< "\t-a id:\t\tAck message with 'id'\n"
+	<< "\t-b:\t\tFor a new message, set it not to be removed on reboot\n"
+	<< "\t-i issuer:\tAdd 'issuer' to new message\n"
+	<< "\t-l level:\tThe log level for the new message (LOG_NOTICE, LOG_WARNING as string)\n"
+	<< "\t-m body:\tThe body of the message\n"
+	<< "\t-p:\t\tSet the message to be persistant, meaning not autoremoved over time\n"
+	<< "\t-q:\t\tTry to be really quiet\n"
+	<< "\t-s:\t\tUse only at boot to trigger notifiers\n";
 }
 
 int main(int argc, char **argv)
 {
 
-    int c,index;
+	int c;
     bool clearonboot = true;
     bool persistant = false;
     bool startup = false;
@@ -33,7 +36,7 @@ int main(int argc, char **argv)
 
     if (argc == 1)
     {
-        printf("Missing arguments.\n");
+		std::cout << "Missing arguments.\n";
         help();
         return 1;
     }
@@ -73,7 +76,7 @@ int main(int argc, char **argv)
     }
     if( argc > optind )
     {
-        printf("Invalid use.\n");
+		std::cout << "Invalid use.\n";
         help();
         return 1;
     }
@@ -82,8 +85,6 @@ int main(int argc, char **argv)
     if( startup )
     {
         // this should be run at boot in order to trigger notifiers of existing messages
-        int triggers;
-
         Message msg;
         msg.CleanUp(true);
         msg.ResetNotifiers(LOG_DEBUG);
@@ -93,7 +94,7 @@ int main(int argc, char **argv)
     {
         if( id.size() != 36 )
         {
-            printf("Invalid message id.\n");
+			std::cout << "Invalid message id.\n";
             return 1;
         }
         else
@@ -107,14 +108,14 @@ int main(int argc, char **argv)
                 // triggers will be <0 if something is wrong...
                 if ( ! quiet )
                 {
-                    printf("%d\n",triggers);
+					std::cout << triggers<<"\n";
                 }
             }
             else
             {
                 if ( ! quiet )
                 {
-                    printf("Failed to ack message");
+					std::cout << "Failed to ack message";
                 }
                 return 1;
             }
@@ -127,12 +128,12 @@ int main(int argc, char **argv)
         NewMessage msg;
         if(ltoi(loglevel) < 0)
         {
-            printf("Invalid loglevel: %d (%s)\n",ltoi(loglevel), loglevel.c_str());
+			std::cout << "Invalid loglevel: " << ltoi(loglevel) <<"("<< loglevel<<")\n";
             return 1;
         }
         if(msgbody.size() == 0)
         {
-            printf("Can not create message with empty body\n");
+			std::cout << "Can not create message with empty body\n";
             return 1;
         }
 
@@ -141,7 +142,7 @@ int main(int argc, char **argv)
         msg.Send();
         if ( ! quiet )
         {
-            printf("%s\n",id.c_str());
+			std::cout << id<<"\n";
         }
 
     }

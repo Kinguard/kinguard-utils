@@ -3,8 +3,6 @@
 
 using namespace CppUnit;
 
-Json::Reader jsonreader;
-
 #define SYSCONFIGFILE "/etc/kinguard/sysconfig.json"
 #define SYSCONFIGFILE_BAK "/etc/kinguard/sysconfig.json.bak"
 #define TEST_DB SRC_PATH "/test/sysconfig.json"

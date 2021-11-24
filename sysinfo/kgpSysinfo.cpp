@@ -23,9 +23,9 @@ kgp_sysType::kgp_sysType()
     this->typeText = sysinfo.SysTypeText[this->type];
 }
 
-Json::Value kgp_sysType::jsonData()
+json kgp_sysType::jsonData()
 {
-    Json::Value ret;
+	json ret;
     ret["type"] = this->type;
     ret["typeText"] = this->typeText;
     return ret;
@@ -45,9 +45,9 @@ kgp_deviceinfo::kgp_deviceinfo()
     this->NetworkDevice = sysinfo.NetworkDevice();
 }
 
-Json::Value kgp_deviceinfo::jsonData()
+json kgp_deviceinfo::jsonData()
 {
-    Json::Value ret;
+	json ret;
     ret["SerialNumber"] = this->SerialNumber;
     ret["NetworkDevice"] = this->NetworkDevice;
     return ret;
@@ -69,9 +69,9 @@ kgp_storage::kgp_storage()
     this->BackupRootPath = sysinfo.BackupRootPath();
 }
 
-Json::Value kgp_storage::jsonData()
+json kgp_storage::jsonData()
 {
-    Json::Value ret;
+	json ret;
     ret["StorageDevicePath"] = this->StorageDevicePath;
     ret["StorageDevice"] = this->StorageDevice;
     ret["StorageDeviceBlock"] = this->StorageDeviceBlock;
@@ -130,8 +130,7 @@ int main(int argc, char **argv)
 	bool quiet = false;
     string configScope, configKey, configValue, checkType;
     int c;
-    Json::Value retval(Json::objectValue);
-    Json::FastWriter writer;
+	json retval;
 
     if ( argc == 1 )
     {
@@ -392,13 +391,13 @@ int main(int argc, char **argv)
                     if(asJson)
                     {
                         // can not use the "normal" json output below, it uses a single string value.
-                        Json::Value jsonlist(Json::arrayValue);
+						json jsonlist=json::array();
                         for (auto x:listValues) {
-                           jsonlist.append(x);
+						   jsonlist.push_back(x);
                         }
 
                         retval[configScope.c_str()][configKey.c_str()]=jsonlist;
-                        printf("%s",writer.write(retval).c_str());
+						cout << retval.dump();
                         return 0;
                     }
                     else
@@ -452,7 +451,7 @@ int main(int argc, char **argv)
     {
 		if ( ! quiet )
 		{
-			printf("%s",writer.write(retval).c_str());
+			cout << retval.dump();
 		}
     }
 

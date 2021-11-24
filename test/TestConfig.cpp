@@ -1,6 +1,5 @@
 #include <algorithm>
 #include "TestConfig.h"
-#include <json/json.h>
 #include <libutils/Process.h>
 #include <libutils/FileUtils.h>
 #include <libopi/SysConfig.h>
@@ -49,22 +48,23 @@ void TestConfig::testReadJsonKey()
     string app;
     app = APP_PATH "/" SYSINFO_APPNAME " -c webapps -k theme";
 
-    Json::Value parsedFromString, ConfigDB;
+	json parsedFromString, ConfigDB;
     string jsonMessage, jsonConfigDB;
-    bool parsingSuccessful, parseDB;
+	// bool parsingSuccessful, parseDB;
     bool retval;
 
     tie(retval,jsonMessage) = Utils::Process::Exec(app);
-    parsingSuccessful = jsonreader.parse(jsonMessage,parsedFromString);
+	CPPUNIT_ASSERT_NO_THROW(parsedFromString = json::parse(jsonMessage) );
 
     jsonConfigDB = File::GetContentAsString(TEST_DB);
-    parseDB = jsonreader.parse(jsonConfigDB,ConfigDB);
+	CPPUNIT_ASSERT_NO_THROW( ConfigDB = json::parse(jsonConfigDB) );
+	//parseDB = jsonreader.parse(jsonConfigDB,ConfigDB);
 
-    CPPUNIT_ASSERT(parsingSuccessful);
-    CPPUNIT_ASSERT(parseDB);
+	//CPPUNIT_ASSERT(parsingSuccessful);
+	//CPPUNIT_ASSERT(parseDB);
 
-    const Json::Value theme = parsedFromString["webapps"]["theme"];
-    const Json::Value DBtheme = ConfigDB["webapps"]["theme"];
+	const json theme = parsedFromString["webapps"]["theme"];
+	const json DBtheme = ConfigDB["webapps"]["theme"];
 
     CPPUNIT_ASSERT_EQUAL_MESSAGE("JSON parameter mismatch",DBtheme,theme);
 }
@@ -74,21 +74,22 @@ void TestConfig::testReadPlainKey()
     string app;
     app = APP_PATH "/" SYSINFO_APPNAME " -c webapps -k theme -p";
 
-    Json::Value ConfigDB;
+	json ConfigDB;
     string key, jsonConfigDB;
-    bool parseDB;
+	//bool parseDB;
     bool retval;
 
     tie(retval,key) = Utils::Process::Exec(app);
 
     jsonConfigDB = File::GetContentAsString(TEST_DB);
-    parseDB = jsonreader.parse(jsonConfigDB,ConfigDB);
+	//parseDB = jsonreader.parse(jsonConfigDB,ConfigDB);
+	CPPUNIT_ASSERT_NO_THROW(ConfigDB = json::parse(jsonConfigDB) );
 
-    CPPUNIT_ASSERT(parseDB);
+	//CPPUNIT_ASSERT(parseDB);
 
-    const Json::Value DBtheme = ConfigDB["webapps"]["theme"];
+	const json DBtheme = ConfigDB["webapps"]["theme"];
 
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Plain text parameter mismatch",DBtheme.asString(),String::Chomp(key));
+	CPPUNIT_ASSERT_EQUAL_MESSAGE("Plain text parameter mismatch",DBtheme.get<string>(),String::Chomp(key));
 }
 
 void TestConfig::testWriteKey()
@@ -199,22 +200,25 @@ void TestConfig::testReadJsonStringList()
 
     app = APP_PATH "/" SYSINFO_APPNAME " -c "+scope+" -k "+key;
 
-    Json::Value parsedFromString, ConfigDB;
+	json parsedFromString, ConfigDB;
     string jsonMessage, jsonConfigDB;
-    bool parsingSuccessful, parseDB;
+	//bool parsingSuccessful, parseDB;
     bool retval;
 
     tie(retval,jsonMessage) = Utils::Process::Exec(app);
-    parsingSuccessful = jsonreader.parse(jsonMessage,parsedFromString);
+	//parsingSuccessful = jsonreader.parse(jsonMessage,parsedFromString);
+	CPPUNIT_ASSERT_NO_THROW(parsedFromString = json::parse(jsonMessage) );
 
     jsonConfigDB = File::GetContentAsString(TEST_DB);
-    parseDB = jsonreader.parse(jsonConfigDB,ConfigDB);
+	CPPUNIT_ASSERT_NO_THROW(ConfigDB = json::parse(jsonConfigDB) );
 
-    CPPUNIT_ASSERT(parsingSuccessful);
-    CPPUNIT_ASSERT(parseDB);
+	//parseDB = jsonreader.parse(jsonConfigDB,ConfigDB);
 
-    Json::Value keyVal(Json::arrayValue);
-    Json::Value dbKeyVal(Json::arrayValue);
+	//CPPUNIT_ASSERT(parsingSuccessful);
+	//CPPUNIT_ASSERT(parseDB);
+
+	json keyVal;
+	json dbKeyVal;
 
     keyVal = parsedFromString[scope][key];
     dbKeyVal = ConfigDB[scope][key];

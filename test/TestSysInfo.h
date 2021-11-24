@@ -3,8 +3,6 @@
 
 using namespace CppUnit;
 
-Json::Reader reader;
-
 
 class TestSysInfo : public TestFixture
 {

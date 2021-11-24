@@ -5,7 +5,8 @@ include( FindPkgConfig )
 pkg_check_modules ( LIBOPI REQUIRED libopi )
 pkg_check_modules ( LIBUTILS REQUIRED libutils>=1.5.1 )
 pkg_check_modules ( LIBNOTIFY REQUIRED libkgpnotify )
-pkg_check_modules ( LIBJSONCPP REQUIRED jsoncpp )
+
+find_package(nlohmann_json 3.2.0 REQUIRED)
 
 set (KGP_UTILS_VERSION_MAJOR 1)
 set (KGP_UTILS_VERSION_MINOR 0)
@@ -25,7 +26,6 @@ endif()
 add_definitions( -std=c++11 )
 
 include_directories("${PROJECT_BINARY_DIR}" "include")
-include_directories ( "${LIBJSONCPP_INCLUDE_DIRS}" )
 
 configure_file (
 	"${PROJECT_SOURCE_DIR}/Config.h.in"

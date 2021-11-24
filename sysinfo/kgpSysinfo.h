@@ -6,11 +6,13 @@
 #include <syslog.h>
 
 #include <unistd.h>
-#include <json/json.h>
+#include <nlohmann/json.hpp>
 #include <libopi/SysInfo.h>
 #include <libopi/SysConfig.h>
 #include <libopi/Secop.h>
 #include <libutils/String.h>
+
+using json = nlohmann::json;
 
 class kgp_sysType
 {
@@ -20,7 +22,7 @@ private:
 
 public:
     kgp_sysType();
-    Json::Value jsonData();
+	json jsonData();
     void plainPrint();
 };
 
@@ -41,7 +43,7 @@ private:
 
 public:
     kgp_deviceinfo();
-    Json::Value jsonData();
+	json jsonData();
     void plainPrint();
 
 };
@@ -81,7 +83,7 @@ private:
 
 public:
     kgp_storage();
-    Json::Value jsonData();
+	json jsonData();
     void plainPrint();
 };
 
